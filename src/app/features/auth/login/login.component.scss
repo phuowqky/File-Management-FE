@@ -121,13 +121,19 @@
                     border: 1px solid #ccc;
                     border-radius: 4px;
                     box-sizing: border-box;
+
                 }
 
-                    .error-message {
-        color: red;
-        font-size: 13px;
-        text-align: left;
-    }
+                input.error{
+                    border: 1px solid red;
+                    outline: none;
+                }
+
+                .error-message {
+                    color: red;
+                    font-size: 13px;
+                    text-align: left;
+                }
 
 
             }
