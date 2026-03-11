@@ -1,0 +1,123 @@
+.register-container {
+    height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, #E3EDF7 0%, #F6F6F6 50%, #DCEAF7 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    font-size: medium;
+    flex-direction: column;
+
+    .register-gif {
+        width: 100px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    .register-card {
+        z-index: 1;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding: 24px 12px;
+        width: 100%;
+        max-width: 420px;
+        padding: 24px;
+        height: 510px;
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 20px;
+
+            h1 {
+                color: #272727;
+                margin-bottom: 8px;
+            }
+
+            span {
+                color: #747395;
+                font-size: 0.9rem;
+                font-weight: 700;
+                font-family: Arial, sans-serif;
+            }
+        }
+
+        .register-form{
+                        flex-direction: column;
+            display: flex;
+            text-align: left;
+            width: 100%;
+            .form-group{
+            display: flex;
+            flex-direction: column;
+                            align-items: start;
+                justify-content: center;
+                   label {
+                    color: #272727;
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    font-family: Arial, sans-serif;
+
+                }
+                nz-form-control {
+                    width: 100%;
+                }
+
+                input [nz-input] {
+                    width: 100%;
+                    padding: 8px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    box-sizing: border-box;
+
+
+
+                }
+
+                .ant-input {
+                    height: 32px;
+                    font-size: 16px;
+                }
+
+                input[nz-input].error {
+                    border: 1px solid red;
+                    outline: none;
+                }
+
+                .error-message {
+                    color: red;
+                    font-size: 13px;
+                    text-align: left;
+                }
+
+
+        }
+        .btn-register {
+                height: 32px;
+                width: 100%;
+                padding: 8px;
+                margin-top: 12px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 12px;
+                border-radius: 4px;
+                box-sizing: border-box;
+                background-color: #236AEA;
+                color: white;
+                font-size: 0.9rem;
+                font-weight: 600;
+                font-family: Arial, sans-serif;
+                border: #F6F6F6;
+
+            }
+        }
+        
+    }
+
+
+
+}
