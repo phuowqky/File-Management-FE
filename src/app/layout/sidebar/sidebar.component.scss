@@ -1,0 +1,140 @@
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #1e293b;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar-logo {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+// NZ Menu dark theme customization
+::ng-deep .custom-menu {
+    background: transparent !important;
+    border-right: none !important;
+
+    .ant-menu-item {
+        margin: 2px 12px !important;
+        padding-left: 20px !important;
+        border-radius: 8px !important;
+        color: #94a3b8 !important;
+        font-size: 14px;
+        font-weight: 500;
+        height: 42px;
+        line-height: 42px;
+        transition: all 0.2s;
+
+        &:hover {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        &.ant-menu-item-selected {
+            color: #fff !important;
+            background: #4ecdc4 !important;
+            box-shadow: 0 4px 12px -2px rgba(78, 205, 196, 0.4);
+        }
+
+        .anticon {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+    }
+
+    .ant-menu-submenu {
+        .ant-menu-submenu-title {
+            margin: 2px 12px !important;
+            padding-left: 20px !important;
+            border-radius: 8px !important;
+            color: #94a3b8 !important;
+            font-size: 14px;
+            font-weight: 500;
+            height: 42px;
+            line-height: 42px;
+
+            &:hover {
+                color: #fff !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+            }
+
+            .anticon {
+                font-size: 18px;
+            }
+
+            .ant-menu-submenu-arrow {
+                color: #94a3b8 !important;
+            }
+        }
+
+        &.ant-menu-submenu-open>.ant-menu-submenu-title {
+            color: #4ecdc4 !important;
+
+            .ant-menu-submenu-arrow {
+                color: #4ecdc4 !important;
+            }
+        }
+
+        .ant-menu-sub {
+            background: transparent !important;
+
+            .ant-menu-item {
+                padding-left: 48px !important;
+                font-size: 13px;
+                height: 38px;
+                line-height: 38px;
+
+                .anticon {
+                    font-size: 15px;
+                }
+            }
+        }
+    }
+}
+
+.sidebar-help {
+    padding: 24px;
+
+    .help-content {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        padding: 16px;
+        text-align: center;
+
+        p {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #94a3b8;
+        }
+
+        button {
+            width: 100%;
+            background: #4ecdc4;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+        }
+    }
+}

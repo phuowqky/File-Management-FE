@@ -1,0 +1,55 @@
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ecdc4" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+        </svg>
+        <span>APP MANAGEMENT</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul nz-menu nzMode="inline" nzTheme="dark" class="custom-menu">
+            <li nz-menu-item nzMatchRouter routerLink="/home" nzIcon="setting">
+                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
+                <span>Trang chủ</span>
+            </li>
+
+            <li nz-submenu nzTitle="Quản trị hệ thống" nzIcon="setting" [nzOpen]="isOpenQTHT">
+                <ul>
+                    <li nz-menu-item nzMatchRouter routerLink="/users">
+                        <span nz-icon nzType="user" nzTheme="outline"></span>
+                        <span>Người dùng</span>
+                    </li>
+                    <li nz-menu-item nzMatchRouter routerLink="/roles">
+                        <span nz-icon nzType="team" nzTheme="outline"></span>
+                        <span>Vai trò</span>
+                    </li>
+                    <li nz-menu-item nzMatchRouter routerLink="/permissions">
+                        <span nz-icon nzType="key" nzTheme="outline"></span>
+                        <span>Quyền hạn</span>
+                    </li>
+                    <li nz-menu-item nzMatchRouter routerLink="/departments">
+                        <span nz-icon nzType="apartment" nzTheme="outline"></span>
+                        <span>Đơn vị</span>
+                    </li>
+                    <li nz-menu-item nzMatchRouter routerLink="/menus">
+                        <span nz-icon nzType="menu" nzTheme="outline"></span>
+                        <span>Quản lý Menu</span>
+                    </li>
+                </ul>
+            </li>
+
+            <li nz-menu-item nzMatchRouter routerLink="/analytics" nzIcon="analy">
+                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
+                <span>Thống kê</span>
+            </li>
+
+            <li nz-menu-item nzMatchRouter routerLink="/setting" nzIcon="setting">
+                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
+                <span>Cài đặt</span>
+            </li>
+        </ul>
+    </nav>
+</aside>
