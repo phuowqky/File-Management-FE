@@ -15,13 +15,15 @@ import en from '@angular/common/locales/en';
 import { HttpClientModule } from '@angular/common/http';
 import { ShareModule } from './share/share.module';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { HomeComponent } from './features/home/home.component';
 registerLocaleData(en);
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
