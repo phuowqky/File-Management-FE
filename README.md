@@ -25,3 +25,14 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+
+//15032026 
+lưu ý : breadcrumbs 
+tìm hiểu cách dựng màn hình ưu tiên nhất
+tìm hiểu cách ghép api, các toán tử RXJS nào hay sử dụng ở angular để ghép api với component
+tìm hiểu cách dựng màn hình 
+1. Tìm hiểu Interceptor front end  ưu tiên
+2. Tìm hiểu service ở front end 
+3. tìm hiểu về cookie và session
+4. paging ở fe

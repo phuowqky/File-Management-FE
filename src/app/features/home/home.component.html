@@ -1,82 +1,13 @@
-<div class="app-layout">
-
-  <!-- Sidebar -->
-  <aside class="sidebar" [class.collapsed]="isCollapsed">
-    <div class="sidebar-logo">
-      <div class="logo-icon">⚡</div>
-      <span class="logo-text" *ngIf="!isCollapsed">Workspace</span>
-    </div>
-
-    <nav class="sidebar-menu">
-      <a class="menu-item active" href="#">
-        <span class="menu-icon">🏠</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Dashboard</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="menu-icon">📊</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Analytics</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="menu-icon">📁</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Projects</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="menu-icon">👥</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Team</span>
-      </a>
-      <a class="menu-item" href="#">
-        <span class="menu-icon">📅</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Calendar</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-bottom">
-      <a class="menu-item" href="#">
-        <span class="menu-icon">⚙️</span>
-        <span class="menu-label" *ngIf="!isCollapsed">Settings</span>
-      </a>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <div class="main-layout" [class.collapsed]="isCollapsed">
-
-    <!-- Header -->
-    <header class="app-header">
-      <div class="header-left">
-        <button class="toggle-btn" (click)="isCollapsed = !isCollapsed">
-          <span *ngIf="!isCollapsed">☰</span>
-          <span *ngIf="isCollapsed">▶</span>
-        </button>
-        <nav class="breadcrumb">
-          <span>Home</span>
-          <span class="sep">/</span>
-          <span class="current">Dashboard</span>
-        </nav>
-      </div>
-
-      <div class="header-right">
-        <button class="icon-btn">🔔</button>
-
-        <div class="user-dropdown" (click)="toggleDropdown()">
-          <div class="user-avatar">A</div>
-          <span class="user-name">Nguyen Van A</span>
-          <span class="arrow">▾</span>
-
-          <div class="dropdown-menu" *ngIf="showDropdown">
-            <a class="dropdown-item" href="#">👤 Profile</a>
-            <a class="dropdown-item" href="#">⚙️ Settings</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item logout" (click)="logout()">🚪 Logout</a>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Content -->
-    <main class="app-content">
-      <!-- Thêm nội dung tại đây -->
-    </main>
-
-  </div>
+<div>
+    <nz-breadcrumb>
+        <nz-breadcrumb-item>
+            Trang chủ
+        </nz-breadcrumb-item>
+        <nz-breadcrumb-item>
+            <a>
+                <span>Application List</span>
+            </a>
+        </nz-breadcrumb-item>
+        <nz-breadcrumb-item>Application</nz-breadcrumb-item>
+    </nz-breadcrumb>
 </div>
