@@ -13,24 +13,21 @@ export class LoginComponent implements OnInit {
 
   loginForm!: FormGroup
 
-  constructor(private fb: FormBuilder, 
+  constructor(private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-  ) 
-  {
-    console.log("23");
-
+  ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
       remember: true,
     },
-    { updateOn: 'blur' }
-  )
+      { updateOn: 'blur' }
+    )
 
   }
   ngOnInit(): void {
-        const saveUserName = localStorage.getItem('username');
+    const saveUserName = localStorage.getItem('username');
     const savePassword = localStorage.getItem('password');
 
     if (saveUserName && savePassword) {
@@ -40,7 +37,7 @@ export class LoginComponent implements OnInit {
         remember: false,
       })
     }
-   }
+  }
 
   // onSubmit() {
   //   // //B1 lay data tu form
@@ -59,7 +56,7 @@ export class LoginComponent implements OnInit {
 
   //       this.authService.login(username, password)
   //       .subscribe((res: any) => {
-          
+
   //         //luu token
   //         this.authService.saveToken(res.token);
 
@@ -87,34 +84,34 @@ export class LoginComponent implements OnInit {
   // }
   onSubmit() {
 
-  if (this.loginForm.valid) {
+    if (this.loginForm.valid) {
 
-    const { username, password, remember } = this.loginForm.value;
+      const { username, password, remember } = this.loginForm.value;
 
-    this.authService.login(username, password)
-      .subscribe((res: any) => {
+      this.authService.login(username, password)
+        .subscribe((res: any) => {
 
-        if (res.success) {
+          if (res.success) {
 
-          this.authService.setToken(res.token);
+            this.authService.setToken(res.token);
 
-          if (remember) {
-            localStorage.setItem('username', username);
-            localStorage.setItem('password', password);
+            if (remember) {
+              localStorage.setItem('username', username);
+              localStorage.setItem('password', password);
+            }
+
+            this.router.navigate(['/home']);
+
+          } else {
+            alert(res.message);
           }
 
-          this.router.navigate(['/home']);
+        });
 
-        } else {
-          alert(res.message);
-        }
-
-      });
+    }
 
   }
 
-}
-  
 }
 
 // export class LoginComponent implements OnInit {
