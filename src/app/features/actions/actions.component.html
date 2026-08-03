@@ -1,0 +1,149 @@
+<nz-breadcrumb>
+  <nz-breadcrumb-item>
+    <a>Home</a>
+  </nz-breadcrumb-item>
+
+  <nz-breadcrumb-item>
+    <a>Quản Trị Hệ Thống</a>
+  </nz-breadcrumb-item>
+
+  <nz-breadcrumb-item>
+    <a>Hành Động</a>
+  </nz-breadcrumb-item>
+</nz-breadcrumb>
+
+<div class="page-header">
+  <div class="page-header__text">
+    <h2>Quản lý Hành Động</h2>
+    <p>Danh sách các quyền / hành động (permission actions) trong hệ thống</p>
+  </div>
+
+  <div class="header-actions">
+    <button
+      nz-button
+      nzType="default"
+      (click)="reloadCache()"
+      [nzLoading]="loading"
+      nz-tooltip
+      nzTooltipTitle="Nạp cấu hình mới nhất từ DB vào RAM để chặn/mở API ngay lập tức"
+    >
+      <span nz-icon nzType="sync"></span> Áp dụng cấu hình quyền
+    </button>
+    <button id="btn-create-action" nz-button nzType="primary" (click)="showAddModal()">
+      <span nz-icon nzType="plus"></span> Thêm mới Quyền
+    </button>
+  </div>
+</div>
+
+<nz-table
+  #actionTable
+  class="action-table"
+  [nzData]="actions"
+  [nzLoading]="loading"
+  nzSize="middle"
+  [nzBordered]="true"
+>
+  <thead>
+    <tr>
+      <th>STT</th>
+      <th>Mã hành động</th>
+      <th>Tên hành động</th>
+      <th>Mô tả</th>
+      <th>Trạng thái</th>
+      <th nzWidth="120px">Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of actionTable.data; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td><code class="action-code">{{ data.code }}</code></td>
+      <td>{{ data.name }}</td>
+      <td class="action-desc">{{ data.description || '—' }}</td>
+      <td>
+        <nz-tag [nzColor]="data.status === 1 ? 'green' : 'red'">
+          {{ data.status === 1 ? 'Hoạt động' : 'Ngừng hoạt động' }}
+        </nz-tag>
+      </td>
+      <td>
+        <a class="action-link" (click)="showEditModal(data)">Sửa</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a
+          class="action-link action-link--danger"
+          nz-popconfirm
+          nzPopconfirmTitle="Bạn có chắc muốn xóa hành động này?"
+          nzPopconfirmPlacement="topRight"
+          (nzOnConfirm)="deleteAction(data.id)"
+        >
+          Xóa
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal
+  [(nzVisible)]="isModalVisible"
+  [nzTitle]="isEditMode ? 'Cập nhật hành động' : 'Thêm mới hành động'"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleSave()"
+  [nzWidth]="650"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="actionForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>Mã hành động</nz-form-label>
+        <nz-form-control [nzSpan]="16" [nzErrorTip]="codeErrorTpl">
+          <input
+            nz-input
+            formControlName="code"
+            placeholder="VD: USER_CREATE"
+            [disabled]="isEditMode"
+          />
+          <ng-template #codeErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Mã hành động là bắt buộc
+            </ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired>Tên hành động</nz-form-label>
+        <nz-form-control [nzSpan]="16" [nzErrorTip]="nameErrorTpl">
+          <input
+            nz-input
+            formControlName="name"
+            placeholder="Nhập tên hành động"
+          />
+          <ng-template #nameErrorTpl let-control>
+            <ng-container *ngIf="control.hasError('required')">
+              Tên hành động là bắt buộc
+            </ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="6">Mô tả</nz-form-label>
+        <nz-form-control [nzSpan]="16">
+          <textarea
+            nz-input
+            formControlName="description"
+            placeholder="Nhập mô tả (tùy chọn)"
+            [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- <nz-form-item>
+        <nz-form-label [nzSpan]="6">Trạng thái</nz-form-label>
+        <nz-form-control [nzSpan]="16">
+          <nz-radio-group formControlName="status">
+            <label nz-radio [nzValue]="1">Hoạt động</label>
+            <label nz-radio [nzValue]="0">Ngừng hoạt động</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>  -->
+    </form>
+  </ng-container>
+</nz-modal>

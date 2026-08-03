@@ -1,0 +1,56 @@
+<div class="cua-toi-container">
+  <div class="page-header">
+    <h2><span nz-icon nzType="folder-open"></span> Hồ sơ của tôi</h2>
+  </div>
+
+  <nz-tabset [(nzSelectedIndex)]="tabIndex">
+    <nz-tab [nzTitle]="tab1Title">
+      <ng-template #tab1Title>
+        Tôi đã nộp <nz-badge [nzCount]="daNop.length" nzStandalone class="badge-info"></nz-badge>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="hoSoCards; context: { list: daNop }"></ng-container>
+    </nz-tab>
+
+    <nz-tab [nzTitle]="tab2Title">
+      <ng-template #tab2Title>
+        Đang xử lý <nz-badge [nzCount]="dangXuLy.length" nzStandalone class="badge-warning"></nz-badge>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="hoSoCards; context: { list: dangXuLy }"></ng-container>
+    </nz-tab>
+
+    <nz-tab [nzTitle]="tab3Title">
+      <ng-template #tab3Title>
+        Chờ tôi phê duyệt <nz-badge [nzCount]="choPheduyet.length" nzStandalone class="badge-danger"></nz-badge>
+      </ng-template>
+      <ng-container *ngTemplateOutlet="hoSoCards; context: { list: choPheduyet }"></ng-container>
+    </nz-tab>
+  </nz-tabset>
+</div>
+
+<!-- Template card hồ sơ -->
+<ng-template #hoSoCards let-list="list">
+  <div class="card-grid" *ngIf="list.length > 0">
+    <div class="hs-card" [class.hs-card--urgent]="hs.doUuTien === 'Khan'" *ngFor="let hs of list" (click)="viewDetail(hs.id)">
+      <div class="card-header">
+        <span class="so-hoso">{{ hs.soHoSo }}</span>
+        <nz-tag *ngIf="hs.doUuTien === 'Khan'" nzColor="red">Khẩn</nz-tag>
+      </div>
+      <h4 class="card-title">{{ hs.tieuDe }}</h4>
+      <div class="card-meta">
+        <nz-tag nzColor="geekblue">{{ hs.loaiHoSo }}</nz-tag>
+        <nz-tag [nzColor]="TRANG_THAI_MAP[hs.trangThai].color">{{ TRANG_THAI_MAP[hs.trangThai].label }}</nz-tag>
+      </div>
+      <div class="card-footer">
+        <span class="date"><span nz-icon nzType="calendar"></span> {{ hs.ngayNop | date:'dd/MM/yyyy' }}</span>
+        <span class="han" *ngIf="hs.hanXuLy" [class.overdue]="hs.quaHan">
+          <span nz-icon [nzType]="hs.quaHan ? 'warning' : 'field-time'"></span>
+          {{ hs.quaHan ? 'Quá hạn' : ('Hạn: ' + (hs.hanXuLy | date:'dd/MM')) }}
+        </span>
+      </div>
+      <div class="person-row" *ngIf="hs.nguoiXuLyFullName">
+        <span nz-icon nzType="user"></span> {{ hs.nguoiXuLyFullName }}
+      </div>
+    </div>
+  </div>
+  <nz-empty *ngIf="list.length === 0" nzNotFoundContent="Không có hồ sơ nào"></nz-empty>
+</ng-template>

@@ -55,12 +55,16 @@
      display: flex;
      align-items: center;
      gap: 20px;
+
+
  }
 
  .notifications {
      position: relative;
      color: #64748b;
      cursor: pointer;
+
+
 
      .badge {
          position: absolute;
@@ -72,7 +76,22 @@
          border-radius: 50%;
          border: 2px solid #fff;
      }
+
+          .notification-popup {
+         background-color: #ef4444 !important;
+         width: 90px;
+         height: 250px;
+         position: absolute;
+         right: 5px;
+     }
+
+
+
+
  }
+
+
+
 
  .user-profile {
      display: flex;

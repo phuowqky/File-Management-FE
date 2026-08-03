@@ -16,6 +16,16 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzDropDownModule } from "ng-zorro-antd/dropdown";
+import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NZ_I18N, vi_VN } from 'ng-zorro-antd/i18n';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzCardModule } from 'ng-zorro-antd/card';
+import { NzDescriptionsModule } from 'ng-zorro-antd/descriptions';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { LOCALE_ID } from '@angular/core';
 @NgModule({
     imports: [
         CommonModule,
@@ -34,7 +44,15 @@ import { NzDropDownModule } from "ng-zorro-antd/dropdown";
         NzPopconfirmModule,
         NzModalModule,
         NzDividerModule,
-        NzTagModule
+        NzTagModule,
+        NzAlertModule,
+        NzInputNumberModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzSwitchModule,
+        NzCardModule,
+        NzDescriptionsModule,
+        NzDatePickerModule,
     ],
     exports: [
         NzFormModule,
@@ -52,8 +70,18 @@ import { NzDropDownModule } from "ng-zorro-antd/dropdown";
         NzPopconfirmModule,
         NzModalModule,
         NzDividerModule,
-        NzTagModule
-    ]
+        NzTagModule,
+        NzAlertModule,
+        NzInputNumberModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NzSwitchModule,
+        NzCardModule,
+        NzDescriptionsModule,
+        NzDatePickerModule,
+    ],  providers: [
+    { provide: NZ_I18N, useValue: vi_VN }
+  ]
 })
 export class ShareModule {
 

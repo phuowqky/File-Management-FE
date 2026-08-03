@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { registerLocaleData } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import en from '@angular/common/locales/en';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,16 +11,21 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { HomeComponent } from './features/home/home.component';
-import { DepartmentsComponent } from './layout/departments/departments.component';
+import { DepartmentsComponent } from './features/departments/departments.component';
 import { HeaderComponent } from './layout/header/header.component';
 import { LayoutComponent } from './layout/layout.component';
-import { MenusComponent } from './layout/menus/menus.component';
-import { PermissionsComponent } from './layout/permissions/permissions.component';
-import { RolesComponent } from './layout/roles/roles.component';
+import { MenusComponent } from './features/menus/menus.component';
+import { PermissionsComponent } from './features/permissions/permissions.component';
+import { RolesComponent } from './features/roles/roles.component';
 import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { UsersComponent } from './layout/users/users.component';
+import { UsersComponent } from './features/users/users.component';
 import { ShareModule } from './share/share.module';
+import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { ActionsComponent } from './features/actions/actions.component';
+
+
 registerLocaleData(en);
+
 
 @NgModule({
   declarations: [
@@ -35,7 +40,9 @@ registerLocaleData(en);
     RolesComponent,
     PermissionsComponent,
     DepartmentsComponent,
-    MenusComponent
+    MenusComponent,
+    ActionsComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -48,6 +55,17 @@ registerLocaleData(en);
 
   ],
   providers: [
+        {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
+    // {
+    //   provide: NZ_CONFIG,
+    //   useValue: ngZorroConfig
+    // },
+    // { provide: NZ_I18N, useValue: vi_VN },
+    // { provide: LOCALE_ID, useValue: 'vi' }
   ],
   bootstrap: [AppComponent]
 })

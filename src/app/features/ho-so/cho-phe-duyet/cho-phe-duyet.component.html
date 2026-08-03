@@ -1,0 +1,78 @@
+<div class="phe-duyet-container">
+  <div class="page-header">
+    <h2>⏳ Hàng đợi Phê duyệt</h2>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card orange">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-info"><div class="stat-num">{{ stats.choDuyet }}</div><div class="stat-label">Chờ duyệt</div></div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info"><div class="stat-num">{{ stats.daDuyet }}</div><div class="stat-label">Đã duyệt</div></div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-icon">❌</div>
+      <div class="stat-info"><div class="stat-num">{{ stats.tuChoi }}</div><div class="stat-label">Từ chối</div></div>
+    </div>
+  </div>
+
+  <!-- Danh sách chờ duyệt -->
+  <div class="list-section" *ngIf="hoSoList.length > 0 || !loading">
+    <nz-spin [nzSpinning]="loading">
+      <div class="approval-card" *ngFor="let hs of hoSoList"
+           [class.khan]="hs.doUuTien === 'Khan'" (click)="viewDetail(hs.id)">
+        <div class="approval-left">
+          <div class="approval-so">
+            <nz-tag [nzColor]="hs.doUuTien === 'Khan' ? 'red' : 'blue'">
+              {{ hs.doUuTien === 'Khan' ? '🔴 KHẨN' : '🔵' }}
+            </nz-tag>
+            <span class="so">{{ hs.soHoSo }}</span>
+          </div>
+          <h4>{{ hs.tieuDe }}</h4>
+          <div class="approval-meta">
+            <span>📋 {{ hs.loaiHoSo }}</span>
+            <span *ngIf="hs.nguoiNopFullName">👤 {{ hs.nguoiNopFullName }}</span>
+            <span *ngIf="hs.nguoiXuLyFullName">⚙️ {{ hs.nguoiXuLyFullName }}</span>
+            <span class="wait-time">⏱️ Chờ {{ getWaitTime(hs.ngayNop) }}</span>
+          </div>
+          <div *ngIf="hs.hanXuLy" class="han-xu-ly" [class.overdue]="hs.quaHan">
+            {{ hs.quaHan ? '⚠️ Quá hạn: ' : '📅 Hạn: ' }}{{ hs.hanXuLy | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+        <div class="approval-actions" (click)="$event.stopPropagation()">
+          <button nz-button nzType="primary" style="background:#52c41a;border-color:#52c41a"
+                  (click)="openAction(hs, 'phe-duyet')">
+            <span nz-icon nzType="check"></span> Phê duyệt
+          </button>
+          <button nz-button nzType="dashed" (click)="openAction(hs, 'bo-sung')">
+            <span nz-icon nzType="exclamation-circle"></span> Bổ sung
+          </button>
+          <button nz-button nzDanger (click)="openAction(hs, 'tu-choi')">
+            <span nz-icon nzType="close"></span> Từ chối
+          </button>
+        </div>
+      </div>
+      <nz-empty *ngIf="hoSoList.length === 0 && !loading"
+                nzNotFoundContent="Không có hồ sơ nào chờ phê duyệt 🎉"></nz-empty>
+    </nz-spin>
+  </div>
+</div>
+
+<!-- Modal hành động -->
+<nz-modal [(nzVisible)]="isModalVisible"
+          [nzTitle]="actionType === 'phe-duyet' ? '✅ Phê duyệt hồ sơ' : actionType === 'tu-choi' ? '❌ Từ chối hồ sơ' : '📝 Yêu cầu bổ sung'"
+          (nzOnCancel)="isModalVisible = false" (nzOnOk)="handleAction()" [nzOkLoading]="actionLoading">
+  <ng-container *nzModalContent>
+    <p><strong>Hồ sơ:</strong> {{ selectedHoSo?.soHoSo }} — {{ selectedHoSo?.tieuDe }}</p>
+    <nz-form-item>
+      <nz-form-label>
+        {{ actionType === 'phe-duyet' ? 'Kết quả / Ghi chú (tùy chọn)' : actionType === 'tu-choi' ? 'Lý do từ chối *' : 'Nội dung cần bổ sung *' }}
+      </nz-form-label>
+      <textarea nz-input [(ngModel)]="actionText" [nzAutosize]="{minRows:3}"
+                [placeholder]="actionType === 'phe-duyet' ? 'Ghi chú phê duyệt...' : actionType === 'tu-choi' ? 'Nhập lý do từ chối...' : 'Nhập nội dung cần bổ sung...'"></textarea>
+    </nz-form-item>
+  </ng-container>
+</nz-modal>

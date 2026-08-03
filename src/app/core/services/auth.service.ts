@@ -1,91 +1,83 @@
-// //Mục đích: gọi API login->lưu token->kiểm tra đã login chưa->logout
 
-
-// import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
-// import { environment } from 'src/environments/environments';
-
-
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthService {
-
-//   private API_URL = environment.apiUrl;
-
-//   constructor(private http: HttpClient) {}
-
-//   login(email: string, password: string) {
-//     return this.http.post(`${this.API_URL}/login`, {
-//       email,
-//       password
-//     });
-//   }
-
-//   saveToken(token: string) {
-//     localStorage.setItem('token', token);
-//   }
-
-//   getToken() {
-//     return localStorage.getItem('token');
-//   }
-
-//   isLoggedIn(): boolean {
-//     return !!localStorage.getItem('token');
-//   }
-
-//   logout() {
-//     localStorage.removeItem('token');
-//   }
-
-// }
-
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, finalize, map, Observable, of, tap } from 'rxjs';
+import { environment } from 'src/environments/environments';
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    username: string;
+    roles: string[];
+    actionCodes: string[];
+  }
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor() {}
-
-  login(username: string, password: string): Observable<any> {
-
-    // mock user
-    const fakeUser = {
-      username: 'admin',
-      password: '123456',
-      token: 'fake-jwt-token'
-    };
-
-    if (username === fakeUser.username && password === fakeUser.password) {
-      return of({
-        success: true,
-        token: fakeUser.token
-      });
-    }
-
-    return of({
-      success: false,
-      message: 'Sai tài khoản hoặc mật khẩu'
-    });
+  private hasToken(): boolean {
+    return !!localStorage.getItem('auth_token');
   }
 
-  setToken(token: string) {
-    localStorage.setItem('token', token);
-  }
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
 
-  getToken() {
-    return localStorage.getItem('token');
+  //Cho các component khác được đọc (listen) trạng thái đăng nhập nhưng không được sửa
+  public isLoggedIn$ = this.isLoggedInSubject
+
+  constructor(private http: HttpClient) { }
+
+  login(username: string, password: string, remember: boolean): Observable<any> {
+
+    return this.http.post<LoginResponse>(`${environment.apiUrl}/auth/login`, { username, password }).pipe(
+      tap(res => {
+        if (res.success && res.data) {
+          localStorage.setItem('auth_token', res.data.token);
+          localStorage.setItem("auth_username", res.data.username);
+          localStorage.setItem('auth_roles', JSON.stringify(res.data.roles || []));
+          localStorage.setItem('auth_action_code', JSON.stringify(res.data.actionCodes));
+          if (remember) {
+            localStorage.setItem('rememberme', 'true');
+          } else {
+            localStorage.removeItem('rememberme');
+          }
+          this.isLoggedInSubject.next(true);
+        }
+      }),
+      map(() => true)
+    )
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return this.isLoggedInSubject.value;
   }
 
-  logout() {
-    localStorage.removeItem('token');
+    private clearLocalStorage(): void {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_username');
+    localStorage.removeItem('auth_roles');
+    localStorage.removeItem('auth_action_codes');
+    localStorage.removeItem('rememberme');
+    this.isLoggedInSubject.next(false);
   }
+
+
+   logout(): Observable<any>{
+        const token = localStorage.getItem('auth_token');
+    // Gọi API blacklist token trước, sau đó dọn localStorage
+    if (token) {
+      return this.http.post(`${environment.apiUrl}/auth/logout`, {}).pipe(
+        catchError(() => of(null)), // Nếu API lỗi vẫn logout local
+        finalize(() => this.clearLocalStorage())
+      );
+    }
+    this.clearLocalStorage();
+
+    return of(null)
+   }
 
 }

@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
 })
 export class HeaderComponent {
   isDropdownVisible = false;
+  isNotificationVisible = false;
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -17,7 +18,15 @@ export class HeaderComponent {
   }
 
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']),
+    })
   }
+
+
+
+toggleNotification(): void {
+  this.isNotificationVisible = !this.isNotificationVisible;
+}
 }

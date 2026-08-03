@@ -1,0 +1,252 @@
+<div class="detail-container" *ngIf="!loading && hoSo">
+  <!-- Breadcrumb + Header -->
+  <div class="detail-header">
+    <div class="header-left">
+      <button nz-button nzType="text" (click)="goBack()">
+        <span nz-icon nzType="arrow-left"></span> Danh sách hồ sơ
+      </button>
+      <nz-breadcrumb>
+        <nz-breadcrumb-item><a routerLink="/home"><span nz-icon nzType="home"></span></a></nz-breadcrumb-item>
+        <nz-breadcrumb-item><a routerLink="/ho-so">Hồ sơ</a></nz-breadcrumb-item>
+        <nz-breadcrumb-item>{{ hoSo.soHoSo }}</nz-breadcrumb-item>
+      </nz-breadcrumb>
+    </div>
+  </div>
+
+  <!-- Title card -->
+  <div class="title-card">
+    <div class="title-left">
+      <h2>{{ hoSo.tieuDe }}</h2>
+      <div class="meta-row">
+        <span class="meta-item"><span nz-icon nzType="file-text"></span> {{ hoSo.soHoSo }}</span>
+        <nz-tag nzColor="geekblue">{{ hoSo.loaiHoSo }}</nz-tag>
+        <nz-tag [nzColor]="hoSo.doUuTien === 'Khan' ? 'red' : 'blue'">
+          {{ hoSo.doUuTien === 'Khan' ? 'Khẩn' : 'Bình thường' }}
+        </nz-tag>
+        <nz-tag [nzColor]="TRANG_THAI_MAP[hoSo.trangThai].color">
+          {{ TRANG_THAI_MAP[hoSo.trangThai].label }}
+        </nz-tag>
+        <nz-tag *ngIf="hoSo.quaHan" nzColor="error">
+          <span nz-icon nzType="warning"></span> Quá hạn
+        </nz-tag>
+      </div>
+    </div>
+    <!-- Action buttons theo trạng thái -->
+    <div class="action-btns">
+      <button nz-button nzType="primary" *ngIf="hoSo.trangThai === 'TIEP_NHAN' || hoSo.trangThai === 'YEU_CAU_BO_SUNG'"
+              (click)="openAction('phan-cong')">
+        <span nz-icon nzType="user-add"></span> Phân công
+      </button>
+      <button nz-button class="btn-submit" *ngIf="hoSo.trangThai === 'DANG_XU_LY'"
+              (click)="chuyenChoPheDuyet()">
+        <span nz-icon nzType="send"></span> Trình lãnh đạo
+      </button>
+      <button nz-button nzType="primary" class="btn-approve" *ngIf="hoSo.trangThai === 'CHO_PHE_DUYET'"
+              (click)="openAction('phe-duyet')">
+        <span nz-icon nzType="check-circle"></span> Phê duyệt
+      </button>
+      <button nz-button nzType="dashed" *ngIf="hoSo.trangThai === 'CHO_PHE_DUYET'"
+              (click)="openAction('bo-sung')">
+        <span nz-icon nzType="exclamation-circle"></span> Y/c bổ sung
+      </button>
+      <button nz-button nzDanger *ngIf="hoSo.trangThai === 'CHO_PHE_DUYET'"
+              (click)="openAction('tu-choi')">
+        <span nz-icon nzType="close-circle"></span> Từ chối
+      </button>
+      <button nz-button nzType="primary" *ngIf="hoSo.trangThai === 'DA_PHE_DUYET'"
+              (click)="openAction('hoan-thanh')">
+        <span nz-icon nzType="trophy"></span> Hoàn thành
+      </button>
+    </div>
+  </div>
+
+  <!-- Steps Timeline -->
+  <div class="steps-card">
+    <nz-steps [nzCurrent]="getCurrentStepIndex()" nzSize="small">
+      <nz-step *ngFor="let step of TRANG_THAI_STEPS"
+               [nzTitle]="step.label" [nzStatus]="getStepStatus(step.key)"
+               [nzIcon]="step.icon"></nz-step>
+    </nz-steps>
+    <div *ngIf="hoSo.trangThai === 'TU_CHOI'" class="reject-notice">
+      <span nz-icon nzType="close-circle" [nzTheme]="'fill'" class="notice-icon-reject"></span>
+      Hồ sơ bị từ chối — Lý do: <strong>{{ hoSo.lyDoTuChoi }}</strong>
+    </div>
+    <div *ngIf="hoSo.trangThai === 'YEU_CAU_BO_SUNG'" class="supplement-notice">
+      <span nz-icon nzType="exclamation-circle" [nzTheme]="'fill'" class="notice-icon-supplement"></span>
+      Cần bổ sung — <strong>{{ hoSo.lyDoTuChoi }}</strong>
+    </div>
+  </div>
+
+  <!-- Main content grid -->
+  <div class="detail-grid">
+    <!-- Left: Thông tin + Nội dung -->
+    <div class="left-col">
+      <!-- Thông tin hồ sơ -->
+      <nz-card nzTitle="Thông tin hồ sơ" class="info-card">
+        <div class="info-grid">
+          <div class="info-row"><span class="label">Số hồ sơ</span><span class="value code">{{ hoSo.soHoSo }}</span></div>
+          <div class="info-row"><span class="label">Loại</span><span class="value">{{ hoSo.loaiHoSo }}</span></div>
+          <div class="info-row"><span class="label">Nguồn</span><span class="value">{{ hoSo.nguonTiepNhan }}</span></div>
+          <div class="info-row"><span class="label">Ngày nộp</span><span class="value">{{ hoSo.ngayNop | date:'dd/MM/yyyy HH:mm' }}</span></div>
+          <div class="info-row"><span class="label">Hạn xử lý</span>
+            <span class="value" [class.danger]="hoSo.quaHan">
+              {{ hoSo.hanXuLy ? (hoSo.hanXuLy | date:'dd/MM/yyyy') : '—' }}
+            </span>
+          </div>
+          <div class="info-row"><span class="label">Người nộp</span>
+            <span class="value">{{ hoSo.nguoiNopFullName || hoSo.nguoiNopUsername }}</span>
+          </div>
+          <div class="info-row"><span class="label">Cán bộ xử lý</span>
+            <span class="value">{{ hoSo.nguoiXuLyFullName || '— Chưa phân công' }}</span>
+          </div>
+          <div class="info-row" *ngIf="hoSo.nguoiPheDuyetFullName">
+            <span class="label">Người phê duyệt</span>
+            <span class="value">{{ hoSo.nguoiPheDuyetFullName }}</span>
+          </div>
+          <div class="info-row" *ngIf="hoSo.ngayPheDuyet">
+            <span class="label">Ngày phê duyệt</span>
+            <span class="value">{{ hoSo.ngayPheDuyet | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+        </div>
+      </nz-card>
+
+      <!-- Nội dung -->
+      <nz-card nzTitle="Nội dung hồ sơ" class="info-card" *ngIf="hoSo.noiDung">
+        <p class="content-text">{{ hoSo.noiDung }}</p>
+      </nz-card>
+
+      <!-- Kết quả phê duyệt -->
+      <nz-card nzTitle="Kết quả xử lý" class="info-card" *ngIf="hoSo.ketQua" [nzBordered]="true">
+        <p class="result-text">{{ hoSo.ketQua }}</p>
+      </nz-card>
+
+      <!-- Nhận xét -->
+      <nz-card nzTitle="Nhận xét / Trao đổi" class="info-card">
+        <div class="comment-list">
+          <div *ngFor="let nx of nhanXetList" class="comment-item">
+            <nz-avatar [nzText]="(nx.nguoiNhanXetFullName || nx.nguoiNhanXetUsername || '?')[0]"
+                       class="comment-avatar"></nz-avatar>
+            <div class="comment-body">
+              <div class="comment-header">
+                <strong>{{ nx.nguoiNhanXetFullName || nx.nguoiNhanXetUsername }}</strong>
+                <nz-tag [nzColor]="nx.loai === 'PHE_DUYET' ? 'green' : 'default'" class="comment-type-tag">{{ nx.loai }}</nz-tag>
+                <span class="comment-time">{{ nx.thoiGian | date:'dd/MM HH:mm' }}</span>
+              </div>
+              <p class="comment-text">{{ nx.noiDung }}</p>
+            </div>
+          </div>
+          <nz-empty *ngIf="nhanXetList.length === 0" nzNotFoundContent="Chưa có nhận xét"></nz-empty>
+        </div>
+        <div class="comment-input">
+          <nz-input-group [nzSuffix]="sendBtn">
+            <input nz-input [(ngModel)]="newComment" placeholder="Nhập nhận xét..."
+                   (keyup.enter)="addComment()" />
+          </nz-input-group>
+          <ng-template #sendBtn>
+            <button nz-button nzType="text" [nzLoading]="commentLoading" (click)="addComment()">
+              <span nz-icon nzType="send" class="send-icon"></span>
+            </button>
+          </ng-template>
+        </div>
+      </nz-card>
+    </div>
+
+    <!-- Right: Lịch sử xử lý -->
+    <div class="right-col">
+      <nz-card nzTitle="Lịch sử xử lý" class="timeline-card">
+        <nz-timeline>
+          <nz-timeline-item *ngFor="let ls of lichSu"
+                            [nzColor]="$any(getHanhDongInfo(ls.hanhDong).color)"
+                            [nzDot]="dotTemplate">
+            <ng-template #dotTemplate>
+              <span nz-icon [nzType]="getHanhDongInfo(ls.hanhDong).icon"
+                    [style.color]="getHanhDongInfo(ls.hanhDong).color"></span>
+            </ng-template>
+            <div class="timeline-item">
+              <div class="timeline-action">{{ getHanhDongInfo(ls.hanhDong).label }}</div>
+              <div class="timeline-user" *ngIf="ls.nguoiThucHienFullName">
+                <span nz-icon nzType="user"></span> {{ ls.nguoiThucHienFullName }}
+              </div>
+              <div class="timeline-note" *ngIf="ls.noiDung">{{ ls.noiDung }}</div>
+              <div class="timeline-time"><span nz-icon nzType="clock-circle"></span> {{ ls.thoiGian | date:'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+          </nz-timeline-item>
+        </nz-timeline>
+        <nz-empty *ngIf="lichSu.length === 0" nzNotFoundContent="Chưa có lịch sử"></nz-empty>
+      </nz-card>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-wrapper">
+  <nz-spin nzSize="large" nzTip="Đang tải..."></nz-spin>
+</div>
+
+<!-- Modal Hành động -->
+<nz-modal [(nzVisible)]="isActionModalVisible"
+          [nzTitle]="actionType === 'phan-cong' ? 'Phân công cán bộ xử lý'
+                    : actionType === 'phe-duyet' ? 'Phê duyệt hồ sơ'
+                    : actionType === 'tu-choi' ? 'Từ chối hồ sơ'
+                    : actionType === 'bo-sung' ? 'Yêu cầu bổ sung'
+                    : 'Hoàn thành hồ sơ'"
+          (nzOnCancel)="isActionModalVisible = false"
+          (nzOnOk)="handleAction()" [nzOkLoading]="actionLoading">
+      
+  <ng-container *nzModalContent>
+    <!-- Phân công -->
+    <ng-container *ngIf="actionType === 'phan-cong'">
+      <nz-form-item>
+        <nz-form-label>Chọn cán bộ xử lý</nz-form-label>
+        <nz-form-control>
+        <nz-select [(ngModel)]="selectedNguoiXuLyId" nzPlaceHolder="Chọn người xử lý" 
+        nzShowSearch style="width:100%">
+          <nz-option *ngFor="let u of allUsers" [nzValue]="u.id"
+                     [nzLabel]="(u.fullName || u.username) + ' (' + u.username + ')'"></nz-option>
+        </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+    </ng-container>
+
+
+
+
+    <!-- Modal Phân Công -->
+<!-- <nz-modal [(nzVisible)]="isPhanCongVisible" nzTitle="Phân công cán bộ xử lý"
+          (nzOnCancel)="isPhanCongVisible = false" (nzOnOk)="handlePhanCong()"
+          nzOkText="Xác nhận phân công">
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label>Chọn cán bộ xử lý</nz-form-label>
+      <nz-form-control>
+        <nz-select [(ngModel)]="selectedNguoiXuLyId" nzPlaceHolder="Chọn người xử lý"
+                   nzShowSearch style="width:100%">
+          <nz-option *ngFor="let u of allUsers" [nzValue]="u.id"
+                     [nzLabel]="(u.fullName || u.username) + ' (' + u.username + ')'"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+</nz-modal> -->
+
+    <!-- Phê duyệt -->
+    <ng-container *ngIf="actionType === 'phe-duyet'">
+      <nz-form-item>
+        <nz-form-label>Kết quả / Ghi chú phê duyệt</nz-form-label>
+        <textarea nz-input [(ngModel)]="actionKetQua" [nzAutosize]="{minRows:3}"
+                  placeholder="Nhập kết quả hoặc ghi chú (tùy chọn)..."></textarea>
+      </nz-form-item>
+    </ng-container>
+    <!-- Từ chối / Bổ sung -->
+    <ng-container *ngIf="actionType === 'tu-choi' || actionType === 'bo-sung'">
+      <nz-form-item>
+        <nz-form-label>{{ actionType === 'tu-choi' ? 'Lý do từ chối *' : 'Nội dung cần bổ sung *' }}</nz-form-label>
+        <textarea nz-input [(ngModel)]="actionReason" [nzAutosize]="{minRows:3}"
+                  [placeholder]="actionType === 'tu-choi' ? 'Nhập lý do từ chối...' : 'Nhập nội dung cần bổ sung...'"></textarea>
+      </nz-form-item>
+    </ng-container>
+    <!-- Hoàn thành -->
+    <ng-container *ngIf="actionType === 'hoan-thanh'">
+      <p>Xác nhận đóng hồ sơ <strong>{{ hoSo?.soHoSo }}</strong> và chuyển sang trạng thái Hoàn thành?</p>
+    </ng-container>
+  </ng-container>
+</nz-modal>

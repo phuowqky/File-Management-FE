@@ -6,50 +6,50 @@
             <path d="M2 17l10 5 10-5"></path>
             <path d="M2 12l10 5 10-5"></path>
         </svg>
-        <span>APP MANAGEMENT</span>
+        <div class="title-sidebar">
+        <span >HỆ THỐNG</span>
+        <span >QUẢN LÝ HỒ SƠ</span>
+        </div>
+
     </div>
 
     <nav class="sidebar-nav">
-        <ul nz-menu nzMode="inline" nzTheme="dark" class="custom-menu">
-            <li nz-menu-item nzMatchRouter routerLink="/home" nzIcon="setting">
-                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
-                <span>Trang chủ</span>
-            </li>
+<ul nz-menu nzMode="inline" nzTheme="dark" class="custom-menu">
 
-            <li nz-submenu nzTitle="Quản trị hệ thống" nzIcon="setting" [nzOpen]="isOpenQTHT">
-                <ul>
-                    <li nz-menu-item nzMatchRouter routerLink="/users">
-                        <span nz-icon nzType="user" nzTheme="outline"></span>
-                        <span>Người dùng</span>
-                    </li>
-                    <li nz-menu-item nzMatchRouter routerLink="/roles">
-                        <span nz-icon nzType="team" nzTheme="outline"></span>
-                        <span>Vai trò</span>
-                    </li>
-                    <li nz-menu-item nzMatchRouter routerLink="/permissions">
-                        <span nz-icon nzType="key" nzTheme="outline"></span>
-                        <span>Quyền hạn</span>
-                    </li>
-                    <li nz-menu-item nzMatchRouter routerLink="/departments">
-                        <span nz-icon nzType="apartment" nzTheme="outline"></span>
-                        <span>Đơn vị</span>
-                    </li>
-                    <li nz-menu-item nzMatchRouter routerLink="/menus">
-                        <span nz-icon nzType="menu" nzTheme="outline"></span>
-                        <span>Quản lý Menu</span>
-                    </li>
-                </ul>
-            </li>
+  <ng-container *ngFor="let menu of myMenus">
 
-            <li nz-menu-item nzMatchRouter routerLink="/analytics" nzIcon="analy">
-                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
-                <span>Thống kê</span>
-            </li>
+    <!-- Menu thường -->
+    <li
+      nz-menu-item
+      *ngIf="!menu.children || menu.children.length === 0"
+      [routerLink]="menu.path"
+    >
+      <span nz-icon [nzType]="menu.icon || 'file'"></span>
+      <span>{{ menu.name }}</span>
+    </li>
 
-            <li nz-menu-item nzMatchRouter routerLink="/setting" nzIcon="setting">
-                <span nz-icon nzType="dashboard" nzTheme="outline"></span>
-                <span>Cài đặt</span>
-            </li>
-        </ul>
-    </nav>
+    <!-- Menu cha -->
+    <li
+      nz-submenu
+      *ngIf="menu.children && menu.children.length > 0"
+      [nzTitle]="menu.name"
+      [nzIcon]="menu.icon || 'folder'"
+    >
+      <ul>
+        <li
+          nz-menu-item
+          *ngFor="let child of menu.children"
+          [routerLink]="child.path"
+        >
+          <span nz-icon [nzType]="child.icon || 'file'"></span>
+          <span>{{ child.name }}</span>
+        </li>
+      </ul>
+    </li>
+
+  </ng-container>
+
+</ul>
+</nav>
+
 </aside>

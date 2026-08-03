@@ -1,0 +1,327 @@
+<div class="menus-container animate-fade-in">
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item
+      ><a routerLink="/home"
+        ><span nz-icon nzType="home"></span> Trang chủ</a
+      ></nz-breadcrumb-item
+    >
+    <nz-breadcrumb-item>Quản trị hệ thống</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Quản lý Menu</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <div class="search-section animate-slide-up">
+    <div class="search-row">
+      <label class="search-label">Tìm kiếm menu</label>
+      <div class="search-flex">
+        <nz-input-group [nzPrefix]="prefixSearch" class="search-input-group">
+          <input
+            type="text"
+            nz-input
+            placeholder="Nhập tên menu, mã hoặc path"
+            [(ngModel)]="searchText"
+            (keyup.enter)="onSearch()"
+          />
+        </nz-input-group>
+        <ng-template #prefixSearch
+          ><span nz-icon nzType="search"></span
+        ></ng-template>
+
+        <button nz-button (click)="onReset()" class="btn-reset">
+          <span nz-icon nzType="reload"></span> Làm mới
+        </button>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="onSearch()"
+          class="btn-search"
+        >
+          <span nz-icon nzType="search"></span> Tìm kiếm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-section animate-slide-up">
+    <div class="table-header">
+      <span class="total-count">Danh sách Menu hệ thống</span>
+      <button
+        nz-button
+        nzType="primary"
+        class="btn-add"
+        (click)="showAddModal()"
+      >
+        <span nz-icon nzType="plus-circle"></span> Thêm mới
+      </button>
+    </div>
+
+    <nz-table
+      #menuTable
+      [nzData]="displayData"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      nzBordered
+      nzSize="middle"
+      [nzLoading]="loading"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="250px">Tên menu</th>
+          <th nzWidth="60px" nzAlign="center">Icon</th>
+          <th nzWidth="120px">Mã</th>
+          <th nzWidth="160px">Path</th>
+          <th nzWidth="180px">Menu cha</th>
+          <th nzWidth="100px" nzAlign="center">Hiển thị</th>
+          <th nzWidth="120px" nzAlign="center">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let data of menuTable.data">
+          <ng-container *ngFor="let menu of mapOfExpandedData[data.id]">
+            <tr
+              *ngIf="(menu.parent && menu.parent.expand) || !menu.parent"
+              [class.child-row]="menu.parentId"
+            >
+              <td
+                [nzIndentSize]="menu.level! * 20"
+                [nzShowExpand]="!!menu.children && menu.children.length > 0"
+                [(nzExpand)]="menu.expand"
+                (nzExpandChange)="
+                  collapse(mapOfExpandedData[data.id], menu, $event)
+                "
+              >
+                <span class="menu-name">{{ menu.name }}</span>
+              </td>
+              <td nzAlign="center">
+                <span
+                  nz-icon
+                  [nzType]="menu.icon || 'menu'"
+                  nzTheme="outline"
+                  class="menu-icon"
+                ></span>
+              </td>
+              <td>
+                <code class="code-badge">{{ menu.code }}</code>
+              </td>
+              <td>
+                <code *ngIf="menu.path" class="code-badge">{{
+                  menu.path
+                }}</code>
+                <span *ngIf="!menu.path" class="no-url">—</span>
+              </td>
+              <td>{{ getParentName(menu.parentId) }}</td>
+              <td nzAlign="center">
+                <nz-tag [nzColor]="menu.visible ? 'green' : 'red'">{{
+                  menu.visible ? "Có" : "Ẩn"
+                }}</nz-tag>
+              </td>
+              <td nzAlign="center">
+                <div class="action-buttons">
+                  <button
+                    nz-button
+                    nzType="default"
+                    nzShape="circle"
+                    nz-tooltip
+                    nzTooltipTitle="Gán Mã Quyền (Actions)"
+                    class="btn-action btn-security"
+                    id="btn-assign-action"
+                    (click)="openAssignActionsModal(menu)"
+                  >
+                    <span nz-icon nzType="safety"></span>
+                  </button>
+                  <button
+                    nz-button
+                    nzType="default"
+                    nzShape="circle"
+                    nz-tooltip
+                    nzTooltipTitle="Chỉnh sửa"
+                    class="btn-action btn-edit"
+                    (click)="showEditModal(menu)"
+                  >
+                    <span nz-icon nzType="edit"></span>
+                  </button>
+                  <button
+                    nz-button
+                    nzType="default"
+                    nzShape="circle"
+                    nz-tooltip
+                    nzTooltipTitle="Xóa"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Bạn có chắc muốn xóa menu này?"
+                    (nzOnConfirm)="deleteMenu(menu)"
+                    class="btn-action btn-delete"
+                  >
+                    <span nz-icon nzType="delete"></span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+
+<nz-modal
+  [(nzVisible)]="isModalVisible"
+  [nzTitle]="isEditing ? 'Chỉnh sửa menu' : 'Thêm menu mới'"
+  (nzOnCancel)="handleModalCancel()"
+  (nzOnOk)="handleModalOk()"
+  [nzOkLoading]="modalLoading"
+  nzWidth="520px"
+  nzOkText="Lưu"
+  nzCancelText="Hủy"
+>
+  <ng-container *nzModalContent>
+    <form nz-form nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Tên menu</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập tên">
+          <input
+            nz-input
+            [(ngModel)]="editingMenu.name"
+            name="name"
+            placeholder="Nhập tên menu"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Mã menu</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập mã">
+          <input
+            nz-input
+            [(ngModel)]="editingMenu.code"
+            name="code"
+            placeholder="VD: MENU_HOSO"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <div nz-row [nzGutter]="16">
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label>Icon</nz-form-label>
+            <nz-form-control>
+              <nz-select
+                [(ngModel)]="editingMenu.icon"
+                name="icon"
+                style="width: 100%"
+              >
+                <nz-option
+                  *ngFor="let ic of iconList"
+                  [nzValue]="ic"
+                  [nzLabel]="ic"
+                  nzCustomContent
+                >
+                  <span nz-icon [nzType]="ic" nzTheme="outline"></span> {{ ic }}
+                </nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label>Thứ tự</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                type="number"
+                [(ngModel)]="editingMenu.orderIndex"
+                name="orderIndex"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <nz-form-item>
+        <nz-form-label>Path</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            [(ngModel)]="editingMenu.path"
+            name="path"
+            placeholder="VD: /users"
+          />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label>Menu cha</nz-form-label>
+        <nz-form-control>
+          <nz-select
+            [(ngModel)]="editingMenu.parentId"
+            name="parentId"
+            nzPlaceHolder="Không (menu gốc)"
+            nzAllowClear
+            style="width: 100%"
+          >
+            <nz-option
+              *ngFor="let m of getRootMenus()"
+              [nzValue]="m.id"
+              [nzLabel]="m.name"
+            ></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-control>
+          <label nz-checkbox [(ngModel)]="editingMenu.visible" name="visible"
+            >Hiển thị Menu</label
+          >
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Modal gán Actions vào Menu -->
+<nz-modal
+  [(nzVisible)]="isActionModalVisible"
+  [nzTitle]="'Gán Mã Quyền cho Menu: ' + (currentMenuToAssign?.name || '')"
+  (nzOnCancel)="closeModal()"
+  [nzFooter]="null"
+  [nzWidth]="480"
+>
+  <ng-container *nzModalContent>
+    <div style="margin-bottom: 16px; color: #64748b">
+      Đánh dấu các thao tác được phép thực hiện bên dưới Menu này.
+    </div>
+
+    <nz-table
+      #actionListTable
+      [nzData]="allActions"
+      [nzFrontPagination]="false"
+      [nzShowPagination]="false"
+      nzSize="small"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="40px">Chọn</th>
+          <th>Mã Quyền (Code)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let act of allActions">
+          <td nzAlign="center">
+            <label
+              nz-checkbox
+              [ngModel]="isActionAssigned(act.id)"
+              (ngModelChange)="onActionCheckChange(act.id, $event)"
+              [nzDisabled]="isAssigning"
+            >
+            </label>
+          </td>
+          <td>
+            <nz-tag [nzColor]="'blue'">{{ act.code }}</nz-tag>
+            <div style="font-size: 12px; color: #666; margin-top: 4px">
+              {{ act.name }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </ng-container>
+</nz-modal>

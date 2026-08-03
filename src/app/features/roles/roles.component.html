@@ -1,0 +1,231 @@
+<div class="users-container animate-fade-in">
+
+  <!-- Breadcrumb -->
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item>
+      <a routerLink="/home">
+        <span nz-icon nzType="home"></span>
+        Trang chủ
+      </a>
+    </nz-breadcrumb-item>
+
+    <nz-breadcrumb-item>Cấu hình hệ thống</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Danh mục vai trò</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <!-- Search -->
+  <div class="search-section animate-slide-up">
+
+    <div class="search-row">
+      <nz-input-group [nzPrefix]="prefixSearch">
+        <input
+          nz-input
+          placeholder="Nhập tên vai trò hoặc mô tả"
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </nz-input-group>
+
+      <ng-template #prefixSearch>
+        <span nz-icon nzType="search"></span>
+      </ng-template>
+    </div>
+
+<nz-card nzTitle="Danh sách vai trò" [nzExtra]="extraTemplate">
+  <nz-table
+    #rolesTable
+    [nzData]="roles"
+    [nzBordered]="false"
+    nzSize="middle"
+    [nzShowPagination]="roles.length > 10"
+  >
+<thead>
+  <tr>
+    <th nzWidth="60px", nzAlign="center">STT</th>
+    <th nzAlign="center">Tên vai trò</th>
+    <th nzAlign="center">Mô tả</th>
+    <th nzWidth="180px", nzAlign="center">Thao tác</th>
+  </tr>
+</thead>
+<tbody>
+  <tr *ngFor="let role of rolesTable.data; let i = index">
+    <td nzAlign="center">{{ i + 1 }}</td>
+
+    <td nzAlign="center">
+      <nz-tag nzColor="blue">
+        {{ role.name }}
+      </nz-tag>
+    </td>
+
+    <td nzAlign="center">
+      {{ role.description || '—' }}
+    </td>
+
+        
+<td class="action-buttons">
+  <button
+    nz-button
+    nzType="text"
+    nz-tooltip
+    nzTooltipTitle="Xem"
+    (click)="viewRole(role)"
+  >
+    
+      <nz-tag nzColor="blue">
+    <span nz-icon nzType="eye"></span>
+  </nz-tag>
+  </button>
+
+<nz-modal
+[(nzVisible)]="isEditModalVisible"
+nzTitle="Cập nhật vai trò"
+(nzOnCancel)="isEditModalVisible=false"
+(nzOnOk)="handleEdit()"
+[nzOkLoading]="modalLoading">
+
+<ng-container *nzModalContent>
+
+<div class="mb-3">
+
+<label>Tên vai trò</label>
+
+<input
+nz-input
+[(ngModel)]="editingRole.name">
+
+</div>
+
+<div class="mt-3">
+
+<label>Mô tả</label>
+
+<textarea
+nz-input
+rows="4"
+[(ngModel)]="editingRole.description">
+</textarea>
+
+</div>
+
+</ng-container>
+
+</nz-modal>
+
+<button
+  nz-button
+  nzType="text"
+  (click)="editRole(role)"
+>
+  <span nz-icon nzType="edit"></span>
+</button>
+
+
+<nz-modal
+  [(nzVisible)]="isDeleteModalVisible"
+  nzTitle="Xóa vai trò"
+  nzOkText="Xóa"
+  nzCancelText="Hủy"
+  [nzOkLoading]="modalLoading"
+  (nzOnOk)="confirmDelete()"
+  (nzOnCancel)="isDeleteModalVisible = false">
+
+  <ng-container *nzModalContent>
+    Bạn có chắc chắn muốn xóa
+    <b>{{ editingRole.name }}</b>?
+  </ng-container>
+
+</nz-modal>
+  <button
+    nz-button
+    nzType="text"
+    nzDanger
+    nz-tooltip
+    nzTooltipTitle="Xóa"
+    (click)="showDelete(role)"
+  >
+    <span nz-icon nzType="delete"></span>
+  </button>
+</td>
+
+  </tr>
+</tbody>
+  </nz-table>
+</nz-card>
+
+
+<nz-modal
+  [(nzVisible)]="isAddModalVisible"
+  nzTitle="Thêm vai trò"
+  (nzOnCancel)="isAddModalVisible = false"
+  (nzOnOk)="handleAdd()"
+  [nzOkLoading]="modalLoading"
+>
+  <ng-container *nzModalContent>
+
+    <div class="mb-3">
+      <label>Tên vai trò</label>
+      <input
+        nz-input
+        [(ngModel)]="editingRole.name"
+        placeholder="Nhập tên vai trò"
+      />
+    </div>
+
+    <div class="mt-3">
+      <label>Mô tả</label>
+      <textarea
+        nz-input
+        rows="4"
+        [(ngModel)]="editingRole.description"
+        placeholder="Nhập mô tả"
+      ></textarea>
+    </div>
+
+  </ng-container>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isViewModalVisible"
+  nzTitle="Chi tiết vai trò"
+  nzOkText="Đóng"
+  nzCancelText="Hủy"
+  (nzOnOk)="isViewModalVisible = false"
+  (nzOnCancel)="isViewModalVisible = false"
+>
+  <ng-container *nzModalContent>
+    <div class="mb-3">
+      <label><b>Tên vai trò</b></label>
+      <input
+        nz-input
+        [ngModel]="editingRole.name"
+        disabled
+      />
+    </div>
+
+    <div class="mb-3">
+      <label><b>Mô tả</b></label>
+      <textarea
+        nz-input
+        rows="4"
+        [ngModel]="editingRole.description"
+        disabled
+      ></textarea>
+    </div>
+
+  </ng-container>
+</nz-modal>
+
+<ng-template #extraTemplate>
+<button
+  nz-button
+  nzType="primary"
+  nzSize="small"
+  (click)="showAddModal()"
+>
+  <span nz-icon nzType="plus"></span>
+  Thêm vai trò
+</button>
+
+
+
+</ng-template>

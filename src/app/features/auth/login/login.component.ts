@@ -11,129 +11,53 @@ import { AuthService } from 'src/app/core/services/auth.service';
 
 export class LoginComponent implements OnInit {
 
-  loginForm!: FormGroup
+  loginForm!: FormGroup;
+  loading = false;
+  error = '';
+  showPassword = ";"
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
   ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
-      remember: true,
-    },
-      { updateOn: 'blur' }
-    )
+      remember: [false],
+    })
 
   }
   ngOnInit(): void {
-    const saveUserName = localStorage.getItem('username');
-    const savePassword = localStorage.getItem('password');
-
-    if (saveUserName && savePassword) {
-      this.loginForm.setValue({
-        username: saveUserName,
-        password: savePassword,
-        remember: false,
-      })
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+    if (localStorage.getItem('rememberme') === 'true') {
+      this.loginForm.patchValue({ remember: true })
     }
   }
 
-  // onSubmit() {
-  //   // //B1 lay data tu form
-  //   // const { username, password } = this.loginForm.value;
 
-  //   // //B2 Ktra du lieu
-  //   // if (username != 'admin' || password != "123456") {
-  //   //   this.loginForm.setErrors({ invalidLogin: true })
-  //   // } else {
-  //   //   console.log("Login success");
-  //   // }
-  //   if (this.loginForm.valid) {
-  //     console.log('submit', this.loginForm.value);
-
-  //     const { username, password, remember } = this.loginForm.value
-
-  //       this.authService.login(username, password)
-  //       .subscribe((res: any) => {
-
-  //         //luu token
-  //         this.authService.saveToken(res.token);
-
-  //         //check box remember login
-  //         if(remember){
-  //           localStorage.setItem('username', username);
-  //           localStorage.setItem('password', password);
-  //         }else{
-  //           localStorage.removeItem('username');
-  //           localStorage.removeItem('password');
-  //         }
-
-  //         //chuyen trang
-  //         this.router.navigate(['/home']);
-
-  //       }); 
-  //   }else{
-  //         Object.values(this.loginForm.controls).forEach(control => {
-  //     if (control.invalid) {
-  //       control.markAsDirty();
-  //       control.updateValueAndValidity({ onlySelf: true });
-  //     }
-  //   });
-  //   }
-  // }
   onSubmit() {
-
-    if (this.loginForm.valid) {
-
-      const { username, password, remember } = this.loginForm.value;
-
-      this.authService.login(username, password)
-        .subscribe((res: any) => {
-
-          if (res.success) {
-
-            this.authService.setToken(res.token);
-
-            if (remember) {
-              localStorage.setItem('username', username);
-              localStorage.setItem('password', password);
-            }
-
-            this.router.navigate(['/home']);
-
-          } else {
-            alert(res.message);
-          }
-
-        });
-
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
 
+    this.loading = true;
+    this.error = '';
+    const { username, password, remember } = this.loginForm.value;
+
+    this.authService.login(username, password, remember).subscribe({
+      next: () => {
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        this.error = err.error?.message || err.message || 'Sai tên đăng nhập hoặc mật khẩu.';
+        this.loading = false;
+      }
+    });
   }
+
 
 }
-
-// export class LoginComponent implements OnInit {
-//   loginForm!: FormGroup
-
-//   constructor(
-//     private fb: FormBuilder
-//   ) {
-//     console.log("23");
-
-//     this.loginForm = this.fb.group({
-//       username: ['', Validators.required],
-//       password: ['', Validators.required]
-//     })
-
-//   }
-
-//   ngOnInit(): void {
-//   }
-
-//   onSubmit() {
-//     console.log(this.loginForm.value);
-//   }
-
-// }

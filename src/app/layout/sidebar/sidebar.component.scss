@@ -1,7 +1,7 @@
 .sidebar {
     width: 260px;
     height: 100vh;
-    background: #1e293b;
+    background: #565656;
     color: #fff;
     display: flex;
     flex-direction: column;
@@ -19,8 +19,14 @@
     letter-spacing: 1px;
     font-size: 18px;
     color: #fff;
+    
 }
 
+.sidebar-logo .title-sidebar {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
 .sidebar-nav {
     flex: 1;
     overflow-y: auto;

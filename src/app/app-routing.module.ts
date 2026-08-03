@@ -5,11 +5,14 @@ import { RegisterComponent } from './features/auth/register/register.component';
 import { HomeComponent } from './features/home/home.component';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LayoutComponent } from './layout/layout.component';
-import { UsersComponent } from './layout/users/users.component';
-import { RolesComponent } from './layout/roles/roles.component';
-import { PermissionsComponent } from './layout/permissions/permissions.component';
-import { DepartmentsComponent } from './layout/departments/departments.component';
-import { MenusComponent } from './layout/menus/menus.component';
+import { UsersComponent } from './features/users/users.component';
+import { RolesComponent } from './features/roles/roles.component';
+import { PermissionsComponent } from './features/permissions/permissions.component';
+import { DepartmentsComponent } from './features/departments/departments.component';
+import { MenusComponent } from './features/menus/menus.component';
+import { LoaiHoSoComponent } from './features/loai-ho-so/loai-ho-so.component';
+import { ActionsComponent } from './features/actions/actions.component';
+
 
 const routes: Routes = [
   {
@@ -37,10 +40,10 @@ const routes: Routes = [
         path: 'roles',
         component: RolesComponent
       },
-      {
-        path: 'permissions',
-        component: PermissionsComponent
-      },
+      // {
+      //   path: 'permissions',
+      //   component: PermissionsComponent
+      // },
       {
         path: 'departments',
         component: DepartmentsComponent
@@ -48,6 +51,18 @@ const routes: Routes = [
       {
         path: 'menus',
         component: MenusComponent
+      },
+      {
+        path: 'loai-ho-so',
+        component: LoaiHoSoComponent
+      },
+      {
+        path: 'actions',
+        component: ActionsComponent
+      },
+      {
+        path: 'ho-so',
+        loadChildren: () => import('./features/ho-so/ho-so.module').then(m => m.HoSoModule)
       },
       {
         path: '',

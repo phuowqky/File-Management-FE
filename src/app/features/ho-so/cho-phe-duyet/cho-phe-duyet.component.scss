@@ -1,0 +1,31 @@
+.phe-duyet-container { padding: 24px; }
+.page-header { margin-bottom: 20px; h2 { font-size: 20px; } }
+
+.stats-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+.stat-card {
+  display: flex; align-items: center; gap: 14px; padding: 16px 24px;
+  border-radius: 12px; min-width: 160px; box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  .stat-icon { font-size: 28px; }
+  .stat-num { font-size: 26px; font-weight: 700; }
+  .stat-label { font-size: 13px; opacity: .8; }
+  &.orange { background: linear-gradient(135deg,#ff9a3c,#fa541c); color: #fff; }
+  &.green  { background: linear-gradient(135deg,#52c41a,#389e0d); color: #fff; }
+  &.red    { background: linear-gradient(135deg,#ff4d4f,#cf1322); color: #fff; }
+}
+
+.approval-card {
+  background: #fff; border-radius: 12px; padding: 16px 20px;
+  margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; border-left: 4px solid #d9d9d9; transition: all .2s;
+  &:hover { box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+  &.khan { border-left-color: #ff4d4f; background: #fff9f9; }
+}
+
+.approval-left { flex: 1; }
+.approval-so { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; .so { font-family: monospace; font-weight: 700; color: #1890ff; } }
+.approval-left h4 { margin: 0 0 8px; font-size: 15px; }
+.approval-meta { display: flex; gap: 16px; font-size: 13px; color: #595959; flex-wrap: wrap; margin-bottom: 6px; }
+.wait-time { color: #fa8c16; font-weight: 500; }
+.han-xu-ly { font-size: 13px; color: #8c8c8c; &.overdue { color: #ff4d4f; font-weight: 600; } }
+.approval-actions { display: flex; gap: 8px; flex-shrink: 0; margin-left: 16px; }

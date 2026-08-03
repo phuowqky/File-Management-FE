@@ -1,0 +1,383 @@
+<div class="users-container animate-fade-in">
+  <!-- Breadcrumb -->
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item>
+      <a routerLink="/home"><span nz-icon nzType="home"></span> Trang chủ</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>Cấu hình hệ thống</nz-breadcrumb-item>
+    <nz-breadcrumb-item>Danh mục người dùng</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <!-- Search Section -->
+  <div class="search-section animate-slide-up">
+    <div class="search-row">
+      <!-- <label>Nhập thông tin tìm kiếm</label> -->
+       <nz-input-group [nzPrefix]="prefixSearch">
+  <input
+    nz-input
+    placeholder="Nhập thông tin tìm kiếm"
+    [(ngModel)]="searchText"
+    (ngModelChange)="onSearchChange($event)" />
+</nz-input-group>
+
+<ng-template #prefixSearch>
+  <span nz-icon nzType="search"></span>
+</ng-template>
+
+    </div>
+
+    <div class="filter-row">
+
+
+    </div>
+  </div>
+
+  <nz-modal [(nzVisible)]="isAddModalVisible" nzTitle="Thêm người dùng" (nzOnCancel)="isAddModalVisible = false"
+    (nzOnOk)="handleAdd()" [nzOkLoading]="modalLoading" nzOkText="Thêm mới" nzCancelText="Hủy">
+
+    <ng-container *nzModalContent>
+      <form nz-form [nzLayout]="'vertical'">
+
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label nzRequired>Tên đăng nhập</nz-form-label>
+              <nz-form-control>
+                <input nz-input [(ngModel)]="editingUser.username" name="username" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label nzRequired>Họ và tên</nz-form-label>
+              <nz-form-control>
+                <input nz-input [(ngModel)]="editingUser.fullName" name="fullName" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input type="email" [(ngModel)]="editingUser.email" name="email" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Mật khẩu</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="suffixTemplate">
+              <input [type]="showPassword ? 'text' : 'password'" nz-input [(ngModel)]="editingUser.password"
+                name="password" />
+            </nz-input-group>
+            <ng-template #suffixTemplate>
+              <span nz-icon [nzType]="showPassword ? 'eye-invisible' : 'eye'" (click)="showPassword = !showPassword"
+                style="cursor:pointer"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div nz-row [nzGutter]="16">
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Tuổi</nz-form-label>
+              <nz-form-control>
+                <nz-input-number style="width:100%" [nzMin]="1" [nzMax]="120" [(ngModel)]="editingUser.age" name="age">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div nz-col [nzSpan]="12">
+            <nz-form-item>
+              <nz-form-label>Đơn vị</nz-form-label>
+              <nz-form-control>
+                <nz-select style="width:100%" [nzLoading]="donViLoading" [(ngModel)]="editingUser.donViId"
+                  name="donViId">
+                  <nz-option *ngFor="let dv of donViList" [nzValue]="dv.id" [nzLabel]="dv.tenDonVi">
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label>Kích hoạt tài khoản</nz-form-label>
+          <nz-form-control>
+            <nz-switch [(ngModel)]="editingUser.enabled" name="enabled"></nz-switch>
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
+    </ng-container>
+  </nz-modal>
+
+
+      <nz-modal [(nzVisible)]="isEditModalVisible" nzTitle="Cập nhật người dùng" (nzOnCancel)="isEditModalVisible = false"
+      (nzOnOk)="handleEdit()" [nzOkLoading]="modalLoading" nzOkText="Lưu" nzCancelText="Hủy">
+
+      <ng-container *nzModalContent>
+
+        <form nz-form nzLayout="vertical">
+
+          <div nz-row [nzGutter]="16">
+
+            <div nz-col [nzSpan]="12">
+
+              <nz-form-item>
+
+                <nz-form-label>Tên đăng nhập</nz-form-label>
+
+                <nz-form-control>
+
+                  <input nz-input [(ngModel)]="editingUser.username" name="editUsername">
+
+                </nz-form-control>
+
+              </nz-form-item>
+
+            </div>
+
+            <div nz-col [nzSpan]="12">
+
+              <nz-form-item>
+
+                <nz-form-label>Họ tên</nz-form-label>
+
+                <nz-form-control>
+
+                  <input nz-input [(ngModel)]="editingUser.fullName" name="editFullName">
+
+                </nz-form-control>
+
+              </nz-form-item>
+
+            </div>
+
+          </div>
+
+          <nz-form-item>
+
+            <nz-form-label>Email</nz-form-label>
+
+            <nz-form-control>
+
+              <input nz-input [(ngModel)]="editingUser.email" name="editEmail">
+
+            </nz-form-control>
+
+          </nz-form-item>
+
+          <nz-form-item>
+
+            <nz-form-label>Vai trò</nz-form-label>
+
+            <nz-form-control>
+
+              <nz-select [(ngModel)]="selectedRoleId" name="roleId">
+
+                <nz-option *ngFor="let role of roleList" [nzValue]="role.id" [nzLabel]="role.name">
+                </nz-option>
+
+              </nz-select>
+
+            </nz-form-control>
+
+          </nz-form-item>
+
+          <nz-form-item>
+
+            <nz-form-label>Đơn vị</nz-form-label>
+
+            <nz-form-control>
+
+              <nz-select [(ngModel)]="editingUser.donViId" name="editDonVi">
+
+                <nz-option *ngFor="let dv of donViList" [nzValue]="dv.id" [nzLabel]="dv.tenDonVi">
+                </nz-option>
+
+              </nz-select>
+
+            </nz-form-control>
+
+          </nz-form-item>
+
+          <nz-form-item>
+
+            <nz-form-label>Kích hoạt</nz-form-label>
+
+            <nz-form-control>
+
+              <nz-switch [(ngModel)]="editingUser.enabled" name="editEnabled">
+              </nz-switch>
+
+            </nz-form-control>
+
+          </nz-form-item>
+
+        </form>
+
+      </ng-container>
+
+    </nz-modal>
+
+  <nz-modal Xem chi tiết [(nzVisible)]="isViewModalVisible" nzTitle="Chi tiết người dùng"
+    (nzOnCancel)="isViewModalVisible = false" [nzFooter]="null">
+
+    <ng-container *nzModalContent>
+
+      <form nz-form nzLayout="vertical">
+
+        <nz-form-item>
+          <nz-form-label>Username</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.username" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Họ và tên</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.fullName" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.email" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Tuổi</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.age" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Đơn vị</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.tenDonVi" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Trạng thái</nz-form-label>
+          <nz-form-control>
+            <input nz-input [value]="editingUser.enabled ? 'Hoạt động' : 'Ngừng hoạt động'" disabled>
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
+
+    </ng-container>
+
+  </nz-modal>
+
+  <nz-modal [(nzVisible)]="isDeleteModalVisible" nzTitle="Xóa người dùng" nzOkText="Xóa" nzCancelText="Hủy"
+    (nzOnOk)="confirmDelete()" (nzOnCancel)="isDeleteModalVisible=false">
+
+    <p>
+      Bạn có chắc muốn xóa
+      <b>{{editingUser.username}}</b>
+      ?
+    </p>
+
+  </nz-modal>
+
+  <div class="table-section animate-slide-up">
+    <div class="table-header">
+      <span class="total-count">
+        Tổng số <strong>{{total}}</strong> kết quả
+      </span>
+      <button nz-button nzType="primary" class="btn-add" (click)="showAddModal()">
+        <span nz-icon nzType="plus-circle" nzTheme="outline"></span>
+        Thêm mới
+      </button>
+
+    </div>
+
+    <nz-table [nzData]="displayData" [nzFrontPagination]="false" [nzTotal]="total" [nzPageIndex]="pageIndex"
+      [nzPageSize]="pageSize" [nzLoading]="loading" (nzPageIndexChange)="onPageIndexChange($event)">
+      <thead>
+        <tr>
+          <th nzAlign="center">STT</th>
+          <th nzAlign="center">Username</th>
+          <th nzAlign="center">Họ tên</th>
+          <th nzAlign="center">Email</th>
+          <th nzAlign="center">Đơn vị</th>
+          <th nzAlign="center">Trạng thái</th>
+          <th nzAlign="center">Thao tác</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let user of displayData; let i = index">
+
+          <td nzAlign="center">
+            {{ (pageIndex - 1) * pageSize + i + 1 }}
+          </td>
+
+          <td nzAlign="center">
+            {{ user.username }}
+          </td>
+
+          <td nzAlign="center">
+            {{ user.fullName || '-' }}
+          </td>
+
+          <td nzAlign="center">
+            {{ user.email }}
+          </td>
+
+          <td nzAlign="center">
+            {{ user.tenDonVi || '-' }}
+          </td>
+
+          <td nzAlign="center">
+
+            <nz-tag [nzColor]="user.enabled ? 'green' : 'red'">
+
+              {{ user.enabled ? 'Hoạt động' : 'Ngừng hoạt động' }}
+
+            </nz-tag>
+          </td>
+          <td nzAlign="center">
+            <div class="action-buttons">
+
+              <button nz-button nzType="text" class="btn-view" nzTooltipTitle="Xem" (click)="viewUser(user)">
+                <span nz-icon nzType="eye"></span>
+              </button>
+
+              <button nz-button nzType="text" class="btn-edit" nzTooltipTitle="Sửa" (click)="editUser(user)">
+                <span nz-icon nzType="edit"></span>
+              </button>
+
+              <button nz-button nzType="text" class="btn-delete" (click)="showDelete(user)">
+                <span nz-icon nzType="delete"></span>
+              </button>
+
+            </div>
+          </td>
+
+
+        </tr>
+
+      </tbody>
+    </nz-table>
+  </div>
+
+
+</div>
+
+<!-- Nêu cách bấm thêm mới hiển thị popup, trong popup có các trường tt cần nhập của user tương ứng ở table
+
+Tìm hiểu về nz-form-control , nz-form-item , cách dùng reactive form 
+
+Làm sao bấm tìm keiém để lấy ra được hết giá trị bằng cách sử dụgn reactive form
+
+Tìm hiểu về paging trong angular liên quan đến table -->

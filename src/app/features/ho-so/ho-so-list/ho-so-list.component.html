@@ -1,0 +1,225 @@
+<div class="page-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <nz-breadcrumb>
+        <nz-breadcrumb-item><a routerLink="/home"><span nz-icon nzType="home"></span></a></nz-breadcrumb-item>
+        <nz-breadcrumb-item>Hồ sơ</nz-breadcrumb-item>
+        <nz-breadcrumb-item>Tất cả hồ sơ</nz-breadcrumb-item>
+      </nz-breadcrumb>
+      <div class="header-title">
+        <h2>📂 Quản lý Hồ sơ</h2>
+        <p>Danh sách toàn bộ hồ sơ trong hệ thống</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button nz-button nzType="primary" id="btn-create-hoso" (click)="showAddModal()">
+        <span nz-icon nzType="plus"></span> Tạo hồ sơ mới
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-section">
+    <div class="filter-row">
+      <nz-input-group [nzPrefix]="prefixSearch" class="search-input">
+        <input nz-input placeholder="Tìm theo số hồ sơ, tiêu đề, tên người nộp..."
+               [(ngModel)]="searchKeyword" (ngModelChange)="applyFilter()" />
+      </nz-input-group>
+      <ng-template #prefixSearch><span nz-icon nzType="search"></span></ng-template>
+
+      <nz-select [(ngModel)]="filterLoai" (ngModelChange)="applyFilter()"
+                 nzPlaceHolder="Loại hồ sơ" class="filter-select" nzAllowClear>
+        <nz-option *ngFor="let l of loaiHoSoOptions" [nzValue]="l.maLoai" [nzLabel]="l.tenLoai"></nz-option>
+      </nz-select>
+
+      <nz-select [(ngModel)]="filterTrangThai" (ngModelChange)="applyFilter()"
+                 nzPlaceHolder="Trạng thái" class="filter-select" nzAllowClear>
+        <nz-option *ngFor="let t of TRANG_THAI_OPTIONS" [nzValue]="t.value" [nzLabel]="t.label"></nz-option>
+      </nz-select>
+
+      <nz-select [(ngModel)]="filterDoUuTien" (ngModelChange)="applyFilter()"
+                 nzPlaceHolder="Độ ưu tiên" class="filter-select" nzAllowClear>
+        <nz-option *ngFor="let u of UU_TIEN_OPTIONS" [nzValue]="u.value" [nzLabel]="u.label"></nz-option>
+      </nz-select>
+
+      <button nz-button (click)="onReset()"><span nz-icon nzType="reload"></span> Làm mới</button>
+    </div>
+    <div class="filter-info">
+      Tổng: <strong>{{ filteredList.length }}</strong> hồ sơ
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="page-content">
+    <nz-table [nzData]="displayData" [nzLoading]="loading" nzSize="middle" [nzBordered]="true"
+              [nzFrontPagination]="false" [nzTotal]="filteredList.length"
+              [nzPageSize]="pageSize" [nzPageIndex]="pageIndex"
+              (nzPageIndexChange)="pageIndex = $event" nzShowPagination [nzScroll]="{ x: '1400px' }">
+      <thead>
+        <tr>
+          <th nzWidth="140px">Số hồ sơ</th>
+          <th nzWidth="220px">Tiêu đề</th>
+          <th nzWidth="130px">Loại</th>
+          <th nzWidth="120px" nzAlign="center">Ưu tiên</th>
+          <th nzWidth="130px" nzAlign="center">Trạng thái</th>
+          <th nzWidth="140px">Người nộp</th>
+          <th nzWidth="140px">Người xử lý</th>
+          <th nzWidth="110px" nzAlign="center">Hạn xử lý</th>
+          <th nzWidth="150px" nzAlign="center" nzRight>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let hs of displayData" [class.row-qua-han]="hs.quaHan">
+          <td>
+            <a (click)="viewDetail(hs.id)" class="link-so-hoso">{{ hs.soHoSo }}</a>
+          </td>
+          <td>
+            <div class="tieu-de-cell">{{ hs.tieuDe }}</div>
+          </td>
+          <td><nz-tag [nzColor]="'geekblue'">{{ hs.loaiHoSo }}</nz-tag></td>
+          <td nzAlign="center">
+            <nz-tag [nzColor]="hs.doUuTien === 'Khan' ? 'red' : 'blue'">
+              {{ hs.doUuTien === 'Khan' ? '🔴 Khẩn' : '🔵 Bình thường' }}
+            </nz-tag>
+          </td>
+          <td nzAlign="center">
+            <nz-tag [nzColor]="getTrangThaiInfo(hs.trangThai).color">
+              {{ getTrangThaiInfo(hs.trangThai).label }}
+            </nz-tag>
+          </td>
+          <td>{{ hs.nguoiNopFullName || hs.nguoiNopUsername }}</td>
+          <td>
+            <span *ngIf="hs.nguoiXuLyFullName">{{ hs.nguoiXuLyFullName }}</span>
+            <span *ngIf="!hs.nguoiXuLyFullName" class="text-muted">Chưa phân công</span>
+          </td>
+          <td nzAlign="center">
+            <span *ngIf="hs.hanXuLy" [class.text-danger]="hs.quaHan">
+              <span *ngIf="hs.quaHan" nz-icon nzType="warning" class="mr-4"></span>
+              {{ hs.hanXuLy | date:'dd/MM/yyyy' }}
+            </span>
+            <span *ngIf="!hs.hanXuLy" class="text-muted">—</span>
+          </td>
+          <td nzAlign="center" nzRight>
+            <div class="action-buttons">
+              <button nz-button nzType="text" nzShape="circle" nz-tooltip nzTooltipTitle="Xem chi tiết"
+                      (click)="viewDetail(hs.id)">
+                <span nz-icon nzType="eye" style="color:#1890ff"></span>
+              </button>
+              <button nz-button nzType="text" nzShape="circle" nz-tooltip nzTooltipTitle="Phân công"
+                      (click)="openPhanCong(hs)"
+                      *ngIf="hs.trangThai === 'TIEP_NHAN' || hs.trangThai === 'YEU_CAU_BO_SUNG'">
+                <span nz-icon nzType="user-add" style="color:#722ed1"></span>
+              </button>
+              <button nz-button nzType="text" nzShape="circle" nz-tooltip nzTooltipTitle="Sửa"
+                      (click)="showEditModal(hs)"
+                      *ngIf="hs.trangThai === 'TIEP_NHAN'">
+                <span nz-icon nzType="edit" style="color:#fa8c16"></span>
+              </button>
+              <button nz-button nzType="text" nzShape="circle" nz-tooltip nzTooltipTitle="Xóa"
+                      nz-popconfirm nzPopconfirmTitle="Bạn có chắc muốn xóa hồ sơ này?"
+                      (nzOnConfirm)="xoaHoSo(hs.id)">
+                <span nz-icon nzType="delete" style="color:#ff4d4f"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+</div>
+
+<!-- Modal Tạo/Sửa Hồ Sơ -->
+<nz-modal [(nzVisible)]="isModalVisible"
+          [nzTitle]="isEditMode ? 'Cập nhật hồ sơ' : 'Tạo hồ sơ mới'"
+          (nzOnCancel)="handleCancel()" (nzOnOk)="handleSave()"
+          [nzOkLoading]="modalLoading" [nzWidth]="700">
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="hoSoForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Tiêu đề</nz-form-label>
+        <nz-form-control nzErrorTip="Vui lòng nhập tiêu đề">
+          <input nz-input formControlName="tieuDe" placeholder="Nhập tiêu đề hồ sơ" />
+        </nz-form-control>
+      </nz-form-item>
+      <div nz-row [nzGutter]="16">
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label nzRequired>Loại hồ sơ</nz-form-label>
+            <nz-form-control nzErrorTip="Vui lòng chọn loại">
+              <nz-select formControlName="loaiHoSo" nzPlaceHolder="Chọn loại hồ sơ">
+                <nz-option *ngFor="let l of loaiHoSoOptions"
+                           [nzValue]="l.maLoai" [nzLabel]="l.tenLoai"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label>Độ ưu tiên</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="doUuTien">
+                <nz-option nzValue="Binh_Thuong" nzLabel="🔵 Bình thường"></nz-option>
+                <nz-option nzValue="Khan" nzLabel="🔴 Khẩn"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <div nz-row [nzGutter]="16">
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label>Nguồn tiếp nhận</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="nguonTiepNhan">
+                <nz-option nzValue="ONLINE" nzLabel="🌐 Online"></nz-option>
+                <nz-option nzValue="TRUC_TIEP" nzLabel="🏢 Trực tiếp"></nz-option>
+                <nz-option nzValue="EMAIL" nzLabel="📧 Email"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col nzSpan="12">
+          <nz-form-item>
+            <nz-form-label>Hạn xử lý</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker formControlName="hanXuLy" nzFormat="dd/MM/yyyy"
+                              style="width:100%" nzPlaceHolder="Chọn ngày"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+      <nz-form-item>
+        <nz-form-label>Nội dung</nz-form-label>
+        <nz-form-control>
+          <textarea nz-input formControlName="noiDung" [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                    placeholder="Mô tả nội dung hồ sơ..."></textarea>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Ghi chú</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="ghiChu" placeholder="Ghi chú thêm (nếu có)" />
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Modal Phân Công -->
+<nz-modal [(nzVisible)]="isPhanCongVisible" nzTitle="Phân công cán bộ xử lý"
+          (nzOnCancel)="isPhanCongVisible = false" (nzOnOk)="handlePhanCong()"
+          nzOkText="Xác nhận phân công">
+  <ng-container *nzModalContent>
+    <nz-form-item>
+      <nz-form-label>Chọn cán bộ xử lý</nz-form-label>
+      <nz-form-control>
+        <nz-select [(ngModel)]="selectedNguoiXuLyId" nzPlaceHolder="Chọn người xử lý"
+                   nzShowSearch style="width:100%">
+          <nz-option *ngFor="let u of allUsers" [nzValue]="u.id"
+                     [nzLabel]="(u.fullName || u.username) + ' (' + u.username + ')'"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </ng-container>
+</nz-modal>
