@@ -60,6 +60,12 @@ const routes: Routes = [
         path: 'actions',
         component: ActionsComponent
       },
+
+            {
+        path: 'departments',
+        component: DepartmentsComponent
+      },
+
       {
         path: 'ho-so',
         loadChildren: () => import('./features/ho-so/ho-so.module').then(m => m.HoSoModule)
