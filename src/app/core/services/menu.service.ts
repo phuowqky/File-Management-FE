@@ -26,7 +26,7 @@ export interface ApiResponse<T> {
     providedIn: 'root'
 })
 export class MenuService {
-    private baseUrl = `${environment.apiUrl}/menu`;
+    private baseUrl = `${environment.apiUrl}/menus`;
 
     constructor(private http: HttpClient) {}
 
