@@ -1,1 +1,90 @@
-<p>departments works!</p>
+<div class="departments-container animate-fade-in">
+
+  <!-- Breadcrumb -->
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item>
+      <a routerLink="/home">
+        <span nz-icon nzType="home"></span>
+        Trang chủ
+      </a>
+    </nz-breadcrumb-item>
+
+    <nz-breadcrumb-item>
+      Quản trị hệ thống
+    </nz-breadcrumb-item>
+
+    <nz-breadcrumb-item>
+      Quản lý đơn vị
+    </nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+
+  <!-- Tiêu đề -->
+  <div class="page-header">
+    <h2>Quản lý đơn vị</h2>
+  </div>
+
+
+  <!-- Danh sách đơn vị -->
+  <nz-table
+    #basicTable
+    [nzData]="donViList"
+    [nzBordered]="true"
+    [nzLoading]="loading"
+  >
+
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Mã đơn vị</th>
+        <th>Tên đơn vị</th>
+        <th>Cấp đơn vị</th>
+        <th>Đơn vị cha</th>
+        <th>Mô tả</th>
+        <th>Trạng thái</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let donVi of basicTable.data">
+
+        <td>
+          {{ donVi.id }}
+        </td>
+
+        <td>
+          {{ donVi.maDonVi }}
+        </td>
+
+        <td>
+          <span nz-icon nzType="apartment"></span>
+          {{ donVi.tenDonVi }}
+        </td>
+
+        <td>
+          {{ donVi.capDonVi }}
+        </td>
+
+        <td>
+          {{ donVi.donViChaId ?? 'Không có' }}
+        </td>
+
+        <td>
+          {{ donVi.moTa || '---' }}
+        </td>
+
+        <td>
+          <nz-tag
+            [nzColor]="donVi.active === 1 ? 'green' : 'red'"
+          >
+            {{ donVi.active === 1 ? 'Hoạt động' : 'Không hoạt động' }}
+          </nz-tag>
+        </td>
+
+      </tr>
+    </tbody>
+
+  </nz-table>
+
+</div>
+```
